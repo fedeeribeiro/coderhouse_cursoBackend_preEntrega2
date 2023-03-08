@@ -25,6 +25,9 @@ export default class CartManager {
     async addProductToCart(cartId, productId) {
         try {
             const cart = await cartsModel.findById(cartId);
+            if ((cart.products).find(product => JSON.stringify(product._id).replace('"', '').replace('"', '') === productId)) {
+                throw new Error('Este producto ya está en el carrito.')
+            }
             cart.products.push({ _id: productId, quantity: 1 });
             cart.save();
             return cart
