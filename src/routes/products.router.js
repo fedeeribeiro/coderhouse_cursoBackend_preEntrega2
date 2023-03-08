@@ -7,10 +7,10 @@ const productManager = new ProductManager();
 
 router.get('/', async (request, response) => {
     const results = await productManager.getProducts(request.query);
-    if (products.length === 0) {
-        response.json({ message: 'No hay productos disponibles.' })
+    if (results) {
+        response.json({ message: 'Productos encontrados.', results })
     } else {
-        response.json({ results })
+        response.json({ message: 'No hay productos disponibles.' })
     }
 });
 

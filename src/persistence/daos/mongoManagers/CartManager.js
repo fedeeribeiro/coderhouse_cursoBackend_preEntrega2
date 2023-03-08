@@ -6,7 +6,7 @@ const productManager = new ProductManager();
 export default class CartManager {
     async addCart() {
         try{
-            const newCart = await cartsModel.create();
+            const newCart = await cartsModel.create({ products: [] });
             return newCart
         } catch (error) {
             console.log(error)
@@ -36,7 +36,7 @@ export default class CartManager {
     async deleteProductInCart(cartId, productId) {
         try {
             const cart = await cartsModel.findById(cartId);
-            const filteredProducts = cart.products.filter(product => product.id !== productId);
+            const filteredProducts = cart.products.filter(product => product.id === productId);
             cart.products = filteredProducts;
             cart.save();
             return cart

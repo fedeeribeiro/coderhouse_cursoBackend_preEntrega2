@@ -12,14 +12,16 @@ export default class ProductManager {
 
     async getProducts(queries) {
         try {
-            const { limit = 10, page = 1, sort, category } = queries;
+            const { limit = 10, page = 1, order, category } = queries;
             let products;
-            if (category) {
-                products = await productsModel.paginate({ category: category }, { limit, page })
-            } else if (sort) {
-                products = await productsModel.paginate({}, { limit, page }).sort({ title: sort })
+            if (order && category) {
+                products = await productsModel.paginate({ category: category }, { limit: limit, page: page, sort: { price: order } });
+            } else if (order) {
+                products = await productsModel.paginate({}, { limit: limit, page: page, sort: { price: order } });
+            } else if (category) {
+                products = await productsModel.paginate({ category: category }, { limit: limit, page: page });
             } else {
-                products = await productsModel.paginate({ category: category }, { limit, page }).sort({ title: sort });
+                products = await productsModel.paginate({}, { limit: limit, page: page });
             }
             const results = {
                 status: 'success',
@@ -29,8 +31,8 @@ export default class ProductManager {
                 nextPage: products.nextPage,
                 hasPrevPage: products.hasPrevPage,
                 hasNextPage: products.hasNextPage,
-                prevLink: products.prevPage ? `https://localhost8080/api/products?page=${products.prevPage}` : null,
-                nextLink: products.nextPage ? `https://localhost8080/api/products?page=${products.nextPage}` : null,
+                prevLink: products.prevPage ? `https://localhost8080/api/products?page=${products.prevPage}&limit=${limit}` : null,
+                nextLink: products.nextPage ? `https://localhost8080/api/products?page=${products.nextPage}&limit=${limit}` : null,
             }
             return results
         } catch (error) {
@@ -58,6 +60,7 @@ export default class ProductManager {
                 stock: newProduct.stock,
                 category: newProduct.category
             }, { new: true });
+            updatedProduct.save();
             return updatedProduct
         } catch (error) {
             console.log(error)

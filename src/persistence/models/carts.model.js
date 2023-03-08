@@ -3,23 +3,21 @@ import mongoose from 'mongoose';
 const cartsSchema = new mongoose.Schema({
     products: [
         {
-            id: {
+            _id: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Products',
-                required: true,
-                unique: true
+                required: true
             },
             quantity: {
                 type: Number,
                 required: true
-            },
-            default: []
+            }
         }
     ]
 });
 
 cartsSchema.pre('find', function (next) {
-    this.populate('products');
+    this.populate({ path:'products._id' });
     next()
 });
 

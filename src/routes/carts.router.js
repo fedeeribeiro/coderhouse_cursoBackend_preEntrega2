@@ -6,15 +6,15 @@ const router = Router();
 const cartManager = new CartManager();
 
 router.post('/', async (request, response) => {
-    await cartManager.addCart();
-    response.json({ message: 'El carrito ha sido creado exitosamente.' })
+    const addedCart = await cartManager.addCart();
+    response.json({ message: `El carrito ha sido creado exitosamente con el ID ${addedCart._id}.` })
 });
 
 router.get('/:cartId', async (request, response) => {
     const { cartId } = request.params;
     const cart = await cartManager.getProductsFromCart(cartId);
     if (cart) {
-        response.json({ message: 'Productos encontrados en el carrito.', cart: cart })
+        response.json({ message: 'Carrito encontrado.', cart: cart })
     } else {
         response.json({ message: 'Carrito no encontrado.' })
     }
@@ -42,7 +42,7 @@ router.delete('/:cartId/products/:productId', async (request, response) => {
 
 router.put('/:cartId', async (request, response) => {
     const { cartId } = request.params;
-    const [ products ] = request.body;
+    const products = request.body;
     const cart = await cartManager.replaceProductsInCart(cartId, products);
     if (cart) {
         response.json({ message: 'Se han actualizado los productos del carrito exitosamente.', cart: cart })
@@ -66,9 +66,9 @@ router.delete('/:cartId', async (request, response) => {
     const { cartId } = request.params;
     const cart = await cartManager.emptyCart(cartId);
     if (cart) {
-        response.json({ message: 'Se han vaciado el carrito exitosamente.', cart: cart })
+        response.json({ message: 'Se ha vaciado el carrito exitosamente.', cart: cart })
     } else {
-        response.json({ message: 'No se han podido vaciar el carrito.' })
+        response.json({ message: 'No se ha podido vaciar el carrito.' })
     }
 });
 
