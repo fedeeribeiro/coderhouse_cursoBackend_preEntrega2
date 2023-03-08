@@ -16,12 +16,13 @@ const addProduct = async (formDataObj) => {
 addProductForm.addEventListener('submit', async e => {
     e.preventDefault();
     const formData = new FormData(addProductForm);
-    formData.append('status', true)
+    formData.append('status', true);
     const formDataObj = {};
     for (const pair of formData) {
         formDataObj[pair[0]] = pair[1]
     }
-    await addProduct(formDataObj)
+    console.log(JSON.stringify(formDataObj))
+    await addProduct(formDataObj);
     socketClient.emit('updateProducts')
 });
 
@@ -30,7 +31,7 @@ deleteProductForm.addEventListener('submit', e => {
     const formData = new FormData(deleteProductForm);
     const productId = formData.get('id');
 
-    fetch(`/api/products/${productId.toString()}`, {
+    fetch(`/api/products/${productId}`, {
         method: 'DELETE',
     })
     .then(response => response.json())
@@ -42,9 +43,10 @@ socketClient.on('fetchProducts', () => {
         method: 'GET'
     })
     .then(response => response.json())
-    .then(products => {
+    .then(response => {
+        let products = response.results.payload;
         let productList = products.map(product => {
-            return `<p>ID: ${product.id} - TITLE: ${product.title} - DESCRIPTION: ${product.description} - PRICE: ${product.price} - STATUS: ${product.status} - CODE: ${product.code} - STOCK: ${product.stock}</p>`
+            return `<p>ID: ${product._id} - TITLE: ${product.title} - DESCRIPTION: ${product.description} - PRICE: ${product.price} - CODE: ${product.code} - STOCK: ${product.stock} - CATEGORY: ${product.category} - STATUS: ${product.status}</p>`
         }).join(' ');
         productsContainer.innerHTML = productList;
     })
