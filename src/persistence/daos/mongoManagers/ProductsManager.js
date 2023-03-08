@@ -14,14 +14,24 @@ export default class ProductManager {
         try {
             const { limit = 10, page = 1, order, category } = queries;
             let products;
+            let prevLink;
+            let nextLink;
             if (order && category) {
                 products = await productsModel.paginate({ category: category }, { limit: limit, page: page, sort: { price: order } });
+                prevLink = products.hasPrevPage ? `http://localhost:8080/api/products?page=${products.prevPage}&limit=${limit}&category=${category}&order=${order}` : null;
+                nextLink = products.hasNextPage ? `http://localhost:8080/api/products?page=${products.nextPage}&limit=${limit}&category=${category}&order=${order}` : null
             } else if (order) {
                 products = await productsModel.paginate({}, { limit: limit, page: page, sort: { price: order } });
+                prevLink = products.hasPrevPage ? `http://localhost:8080/api/products?page=${products.prevPage}&limit=${limit}&order=${order}` : null;
+                nextLink = products.hasNextPage ? `http://localhost:8080/api/products?page=${products.nextPage}&limit=${limit}&order=${order}` : null
             } else if (category) {
                 products = await productsModel.paginate({ category: category }, { limit: limit, page: page });
+                prevLink = products.hasPrevPage ? `http://localhost:8080/api/products?page=${products.prevPage}&limit=${limit}&category=${category}` : null;
+                nextLink = products.hasNextPage ? `http://localhost:8080/api/products?page=${products.nextPage}&limit=${limit}&category=${category}` : null
             } else {
                 products = await productsModel.paginate({}, { limit: limit, page: page });
+                prevLink = products.hasPrevPage ? `http://localhost:8080/api/products?page=${products.prevPage}&limit=${limit}` : null;
+                nextLink = products.hasNextPage ? `http://localhost:8080/api/products?page=${products.nextPage}&limit=${limit}` : null
             }
             const results = {
                 status: 'success',
@@ -31,8 +41,8 @@ export default class ProductManager {
                 nextPage: products.nextPage,
                 hasPrevPage: products.hasPrevPage,
                 hasNextPage: products.hasNextPage,
-                prevLink: products.prevPage ? `https://localhost8080/api/products?page=${products.prevPage}&limit=${limit}` : null,
-                nextLink: products.nextPage ? `https://localhost8080/api/products?page=${products.nextPage}&limit=${limit}` : null,
+                prevLink: prevLink,
+                nextLink: nextLink,
             }
             return results
         } catch (error) {

@@ -1,5 +1,5 @@
 import { cartsModel } from '../../models/carts.model.js';
-import ProductManager from './ProductManager.js';
+import ProductManager from './ProductsManager.js';
 
 const productManager = new ProductManager();
 
@@ -25,7 +25,7 @@ export default class CartManager {
     async addProductToCart(cartId, productId) {
         try {
             const cart = await cartsModel.findById(cartId);
-            cart.products.push({ id: productId, quantity: 1 });
+            cart.products.push({ _id: productId, quantity: 1 });
             cart.save();
             return cart
         } catch (error) {
@@ -36,7 +36,7 @@ export default class CartManager {
     async deleteProductInCart(cartId, productId) {
         try {
             const cart = await cartsModel.findById(cartId);
-            const filteredProducts = cart.products.filter(product => product.id === productId);
+            const filteredProducts = cart.products.filter(product => product._id === productId);
             cart.products = filteredProducts;
             cart.save();
             return cart
@@ -59,7 +59,7 @@ export default class CartManager {
     async updateProductInCart(cartId, productId, quantity) {
         try {
             const cart = await cartsModel.findById(cartId); 
-            const product = cart.products.find(product => product.id === productId);
+            const product = cart.products.find(product => product._id === productId);
             product.quantity = quantity;
             cart.save();
             return cart

@@ -13,7 +13,7 @@ const addProduct = async (formDataObj) => {
     .then(response => response.json())
 }
 
-addProductForm.addEventListener('submit', async (e) => {
+addProductForm.addEventListener('submit', async e => {
     e.preventDefault();
     const formData = new FormData(addProductForm);
     formData.append('status', true)
@@ -25,7 +25,7 @@ addProductForm.addEventListener('submit', async (e) => {
     socketClient.emit('updateProducts')
 });
 
-deleteProductForm.addEventListener('submit', (e) => {
+deleteProductForm.addEventListener('submit', e => {
     e.preventDefault();
     const formData = new FormData(deleteProductForm);
     const productId = formData.get('id');

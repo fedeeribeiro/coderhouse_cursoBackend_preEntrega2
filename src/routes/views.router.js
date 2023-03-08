@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import CartManager from '../persistence/daos/mongoManagers/CartManager.js';
-import ProductManager from '../persistence/daos/mongoManagers/ProductManager.js';
+import CartManager from '../persistence/daos/mongoManagers/CartsManager.js';
+import ProductManager from '../persistence/daos/mongoManagers/ProductsManager.js';
 
 const router = Router();
 
@@ -8,7 +8,7 @@ const productManager = new ProductManager();
 const cartManager = new CartManager();
 
 router.get('/', async (request, response) => {
-    const results = await productManager.getProducts({ limit: 10, page: 1 });
+    const results = await productManager.getProducts(request.query);
     const products = (results.payload).map(product => {
         return {
             id: product._id,
@@ -30,7 +30,13 @@ router.get('/realTimeProducts', (request, response) => {
 });
 
 router.get('/products', async (request, response) => {
-    const results = await productManager.getProducts({ limit: 10, page: 1 });
+    const results = await productManager.getProducts(request.query);
+    if (results.prevLink) {
+        results.prevLink = (results.prevLink).replace('api', 'views')
+    }
+    if (results.nextLink) {
+        results.nextLink = (results.nextLink).replace('api', 'views')
+    }
     const products = (results.payload).map(product => {
         return {
             id: product._id.toString(),
@@ -44,7 +50,7 @@ router.get('/products', async (request, response) => {
             status: product.status
         }
     });
-    response.render('products', { products })
+    response.render('products', { products, results })
 });
 
 router.get('/carts/:cartId', async (request, response) => {
